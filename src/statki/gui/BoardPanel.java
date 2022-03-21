@@ -50,6 +50,7 @@ public class BoardPanel extends JPanel {
         }
         ships = new ArrayList<Ship>();
         ships.add(new Ship(100, 100, 25, 2, true));
+        ships.add(new Ship(150, 100, 25, 3, false));
 	}
 	
 	private double getScale()
