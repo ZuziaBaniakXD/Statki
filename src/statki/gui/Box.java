@@ -47,3 +47,4 @@ public class Box implements Drawable {
 		g.drawRect((int)(x*scale), (int)(y*scale), (int)(size*scale), (int)(size*scale));
 	}
 }
+

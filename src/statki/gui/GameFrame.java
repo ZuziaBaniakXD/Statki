@@ -23,18 +23,19 @@ public class GameFrame extends JFrame {
 		upPanel.add(setShipsButton);
 		JButton playButton = new JButton("Zagraj");
 		upPanel.add(playButton);
+		JButton MusicButton = new JButton("Wlacz dzwiek");
+		upPanel.add(MusicButton);
 		add(upPanel, BorderLayout.NORTH);
 		
 		JPanel bottomPanel = new JPanel(new GridLayout(1, 2));
 		
-		BoardPanel p1 = new BoardPanel("TWOJA PLANSZA");
-		BoardPanel p2 = new BoardPanel("PLANSZA PRZECIWNIKA");
+		BoardPanel p1 = new BoardPanel("TWOJA PLANSZA", true);
+		BoardPanel p2 = new BoardPanel("PLANSZA PRZECIWNIKA", false);
 		bottomPanel.add(p1);
 		bottomPanel.add(p2);
 		
 		add(bottomPanel, BorderLayout.CENTER);
 	}
-
 
 
 }

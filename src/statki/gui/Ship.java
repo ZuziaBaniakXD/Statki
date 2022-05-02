@@ -22,7 +22,8 @@ public class Ship implements Drawable {
 
 	@Override
 	public void draw(Graphics g, double scale) {
-		g.setColor(Color.orange);
+		Color c1 = new Color(51,204,255);
+		g.setColor(c1);
 		if(isVertical)
 		{
 			g.fillRect((int)(scale*x), (int)(scale*y), (int)(segmentSize*scale), (int)(segmentSize * segmentCount * scale));
@@ -33,5 +34,6 @@ public class Ship implements Drawable {
 		}
 		
 	}
+	
 
 }
