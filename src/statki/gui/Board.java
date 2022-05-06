@@ -1,42 +1,31 @@
 package statki.gui;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Board { //reprezentuje czesc logiczna statkow, przechowujemy tylko liczobwo informacje o pozycjach stakow oraz trafieniu itp
 	private int[][] board;
 	private ArrayList<ShipLogic> ships;
-	private final int BOARD_SIZE = 10;
+	public static final int BOARD_SIZE = 10;
 	private final int EMPTY_FIELD = 0;
 	
 	public Board() {
 		board = new int[BOARD_SIZE][BOARD_SIZE];
-//				{
-//				{ 0, 0, 0, 3, 3, 3, 0, 0, 0, 0 },
-//				{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-//				{ 0, 0, 0, 0, 0, 0, 3, 0, 0, 0 },
-//				{ 0, 1, 0, 0, 1, 0, 3, 0, 2, 0 },
-//				{ 0, 0, 0, 0, 0, 0, 3, 0, 2, 0 },
-//				{ 4, 0, 1, 0, 0, 0, 0, 0, 0, 0 },
-//				{ 4, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-//				{ 4, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-//				{ 4, 0, 0, 2, 2, 0, 0, 2, 2, 0 },
-//				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
-//				};
 		ships = new ArrayList<>();
-//		ships.add(new ShipLogic(1, 1, 1, false));
-//		ships.add(new ShipLogic(1, 3, 1, false));
-//		ships.add(new ShipLogic(2, 5, 1, false));
-//		ships.add(new ShipLogic(4, 3, 1, false));
-//		
-//		ships.add(new ShipLogic(8, 3, 2, true));
-//		ships.add(new ShipLogic(7, 8, 2, false));
-//		ships.add(new ShipLogic(3, 8, 2, false));
-//		
-//		ships.add(new ShipLogic(3, 0, 3, false));
-//		ships.add(new ShipLogic(6, 2, 3, true));
-//		
-//		ships.add(new ShipLogic(0, 5, 4, true));
 		
+		Random rand = new Random();
+		int sizes[] = {4, 3, 3, 2, 2, 2, 1, 1, 1, 1 };
+		for(int i = 0; i < sizes.length; i++)
+		{
+			int size = sizes[i];
+			ShipLogic ship = null;
+			do
+			{
+				//wejscie w petle nastepuje przed sprawdzeniem warunku, tworzy sie losowy statek
+				ship = new ShipLogic(rand.nextInt(BOARD_SIZE), rand.nextInt(BOARD_SIZE), size, rand.nextBoolean());
+			}
+			while(!placeShip(ship)); //jesli nie uda sie dodac statku to wracamy na poczatek petli i losujemy kolejny statek
+		}
 	}
 	
 	private boolean isEmptyFieldArround(int x, int y)
@@ -57,33 +46,58 @@ public class Board { //reprezentuje czesc logiczna statkow, przechowujemy tylko 
 	public boolean canPlaceShip(ShipLogic ship)
 	{
 		if(ship.getCol() < 0 || ship.getCol() >= BOARD_SIZE || ship.getRow() < 0 || ship.getRow() >= BOARD_SIZE
-				|| ship.getSize() < 0 || ship.getSize() > BOARD_SIZE || ship.getRow() + ship.getSize() < BOARD_SIZE
-				|| ship.getCol() + ship.getSize() < BOARD_SIZE)
+				|| ship.getSize() < 0 || ship.getSize() > BOARD_SIZE || ship.getRow() + ship.getSize() - 1 >= BOARD_SIZE
+				|| ship.getCol() + ship.getSize() - 1 >= BOARD_SIZE)
 		{
 			return false;
 		}
 		
-		if(!ship.isVertical()) //jesli jest horyzontalny
+		if(ship.isVertical()) //jesli jest wertykalny
 		{
-			for(int i = ship.getCol(); i <= ship.getCol() + ship.getSize(); i++)
+			for(int i = ship.getCol(); i < ship.getCol() + ship.getSize(); i++)
 			{
-				if(!isEmptyFieldArround(i, ship.getRow()))
+				if(!isEmptyFieldArround(ship.getRow(), i))
 				{
 					return false;
 				}
 			}
 		}
-		else //jesli jest wertykalny
+		else //jesli jest horyzontalny
 		{
-			for(int i = ship.getRow(); i <= ship.getRow() + ship.getSize(); i++)
+			for(int i = ship.getRow(); i < ship.getRow() + ship.getSize(); i++)
 			{
-				if(!isEmptyFieldArround(ship.getCol(), i))
+				if(!isEmptyFieldArround(i, ship.getCol()))
 				{
 					return false;
 				}
 			}
 		}
 		
+		return true;
+	}
+	
+	public boolean placeShip(ShipLogic ship)
+	{
+		if(!canPlaceShip(ship))
+		{
+			return false;
+		}
+		
+		if(ship.isVertical()) //jesli jest horyzontalny
+		{
+			for(int i = ship.getCol(); i < ship.getCol() + ship.getSize(); i++)
+			{
+				board[ship.getRow()][i] = ship.getSize();
+			}
+		}
+		else //jesli jest wertykalny
+		{
+			for(int i = ship.getRow(); i < ship.getRow() + ship.getSize(); i++)
+			{
+				board[i][ship.getCol()] = ship.getSize();
+			}
+		}
+		ships.add(ship);
 		return true;
 	}
 
