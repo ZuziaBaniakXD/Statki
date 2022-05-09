@@ -23,8 +23,8 @@ public class BoardPanel extends JPanel {
 	private int baseShipPosX;
 	private int baseShipPosY;
 	
-	public BoardPanel(String playerText, boolean showShips) {
-		this.showShips = showShips;
+	public BoardPanel(String playerText) {
+		this.showShips = false;
 		this.playerText = playerText;
 		int x = 0;
 		
@@ -62,8 +62,7 @@ public class BoardPanel extends JPanel {
         for(int i = 0; i < board.getShips().size(); i++)
         {
         	ShipLogic sl = board.getShips().get(i); //pobieram pobjedyczny statek z listy pod danym indeksem i
-        	int blockSize = 25;
-        	Ship s = new Ship((1+sl.getRow()) * blockSize, (1+sl.getCol()) * blockSize, blockSize, sl.getSize(), sl.isVertical());
+        	Ship s = new Ship((1+sl.getRow()) * size, (1+sl.getCol()) * size, size, sl.getSize(), sl.isVertical());
         	ships.add(s);
         }
         
@@ -88,14 +87,29 @@ public class BoardPanel extends JPanel {
 			
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				System.out.println("Rel");
-				if(selectedShip != null)
+				if(selectedShip != null && e.getButton() == MouseEvent.BUTTON1)
 				{
 					selectedShip.deselect();
-					selectedShip.setX(baseShipPosX);
-					selectedShip.setY(baseShipPosY);
-					var index = getIndexFromPosition(e.getX(), e.getY());
-					System.out.println(index[0] + " " + index[1]);
+
+					var index = getIndexFromPosition((int)(e.getX() / getScale()),(int)(e.getY() / getScale()));
+					var sourceIndex = getIndexFromPosition(baseShipPosX, baseShipPosY);
+					System.out.println(sourceIndex[0] + " " + sourceIndex[1] + " | " + index[0] + " " + index[1]);
+					try {
+						var success = board.move(sourceIndex[0], sourceIndex[1], index[0], index[1]);
+						if(success)
+						{
+							selectedShip.setX((index[0] + 1) * size); //+1 bo uwzgledniamy rysowane na ekranie naglowki
+							selectedShip.setY((index[1] + 1) * size);
+							System.out.println("OK!!!!");
+						}
+						else
+						{
+							selectedShip.setX(baseShipPosX);
+							selectedShip.setY(baseShipPosY);
+						}
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
 					repaint();
 					selectedShip = null;
 				}
@@ -103,15 +117,18 @@ public class BoardPanel extends JPanel {
 			
 			@Override
 			public void mousePressed(MouseEvent e) {
-				System.out.println("Press");
-				selectedShip = getselectedShip(e.getX(), e.getY());
-				baseShipPosX = selectedShip.getX();
-				baseShipPosY = selectedShip.getY();
-				if(selectedShip != null)
+				if(e.getButton() == MouseEvent.BUTTON1)
 				{
-					selectedShip.select();
-					repaint();
+					selectedShip = getselectedShip(e.getX(), e.getY());
+					if(selectedShip != null)
+					{
+						baseShipPosX = selectedShip.getX();
+						baseShipPosY = selectedShip.getY();
+						selectedShip.select();
+						repaint();
+					}
 				}
+				
 				
 			}
 			
@@ -129,7 +146,25 @@ public class BoardPanel extends JPanel {
 			
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				// TODO Auto-generated method stub
+				if(e.getButton() == MouseEvent.BUTTON3)
+				{
+					selectedShip = getselectedShip(e.getX(), e.getY());
+					if(selectedShip != null)
+					{
+						var sourceIndex = getIndexFromPosition(selectedShip.getX(), selectedShip.getY());
+						try {
+							var success = board.toggleOrientation(sourceIndex[0], sourceIndex[1]);
+							if(success)
+							{
+								selectedShip.toggleOrientation();
+								System.out.println("OK!!!!");
+							}
+						} catch (Exception e1) {
+							e1.printStackTrace();
+						}
+						repaint();
+					}
+				}
 				
 			}
 		});
@@ -194,5 +229,11 @@ public class BoardPanel extends JPanel {
         g.setColor(Color.black);
         g.drawString(playerText, (int)(60 * getScale()), (int)(290 * getScale()));
     }
+	
+	public void showShips()
+	{
+		showShips = true;
+		repaint();
+	}
 	
 }

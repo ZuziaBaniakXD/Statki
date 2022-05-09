@@ -45,9 +45,14 @@ public class Board { //reprezentuje czesc logiczna statkow, przechowujemy tylko 
 	
 	public boolean canPlaceShip(ShipLogic ship)
 	{
-		if(ship.getCol() < 0 || ship.getCol() >= BOARD_SIZE || ship.getRow() < 0 || ship.getRow() >= BOARD_SIZE
-				|| ship.getSize() < 0 || ship.getSize() > BOARD_SIZE || ship.getRow() + ship.getSize() - 1 >= BOARD_SIZE
-				|| ship.getCol() + ship.getSize() - 1 >= BOARD_SIZE)
+		if(ship.getCol() < 0 
+				|| ship.getCol() >= BOARD_SIZE 
+				|| ship.getRow() < 0 
+				|| ship.getRow() >= BOARD_SIZE
+				|| ship.getSize() < 0 
+				|| ship.getSize() > BOARD_SIZE 
+				|| (!ship.isVertical() && ship.getRow() + ship.getSize() - 1 >= BOARD_SIZE)
+				|| (ship.isVertical() && ship.getCol() + ship.getSize() - 1 >= BOARD_SIZE))
 		{
 			return false;
 		}
@@ -100,6 +105,65 @@ public class Board { //reprezentuje czesc logiczna statkow, przechowujemy tylko 
 		ships.add(ship);
 		return true;
 	}
+	
+	private ShipLogic getShip(int i, int j)
+	{
+		for(int k = 0; k < ships.size(); k++)
+		{
+			var ship = ships.get(k);
+			if(ship.getRow() == i && ship.getCol() == j)
+			{
+				return ship;
+			}
+		}
+		return null;
+	}
+	
+	private void removeShip(ShipLogic ship)
+	{
+		if(ship.isVertical()) //jesli jest horyzontalny
+		{
+			for(int i = ship.getCol(); i < ship.getCol() + ship.getSize(); i++)
+			{
+				board[ship.getRow()][i] = EMPTY_FIELD;
+			}
+		}
+		else //jesli jest wertykalny
+		{
+			for(int i = ship.getRow(); i < ship.getRow() + ship.getSize(); i++)
+			{
+				board[i][ship.getCol()] = EMPTY_FIELD;
+			}
+		}
+		ships.remove(ship);
+		
+	}
+	
+	public boolean move(int sourceI, int sourceJ, int destinationI, int destinationJ) throws Exception
+	{
+		//1. Pobiera statek z listy
+		//2. Jesli statek nie istnieje to rzuca wyjatkiem i przerywa operacje
+		//3. Usuwa statek z planszy
+		//4. Tworzy nowy statek ale o nowych wspolrzednych i probuje go dodac na plansze, jesli uda sie dodac to zwroc trie
+		//5. Jesli nie uda sie dodac to dodaj z powrotem stary statek na plansze i zwroc false
+		var ship = getShip(sourceI, sourceJ);
+		if(ship == null)
+		{
+			throw new Exception("No ship on pos: " + sourceI + " " + sourceJ);
+		}
+		
+		removeShip(ship);
+		ShipLogic newShip = new ShipLogic(destinationI, destinationJ, ship.getSize(), ship.isVertical());
+		if(placeShip(newShip))
+		{
+			return true;
+		}
+		else
+		{
+			placeShip(ship);
+			return false;
+		}
+	}
 
 	public int[][] getBoard() {
 		return board;
@@ -107,5 +171,25 @@ public class Board { //reprezentuje czesc logiczna statkow, przechowujemy tylko 
 
 	public ArrayList<ShipLogic> getShips() {
 		return ships;
+	}
+
+	public boolean toggleOrientation(int i, int j) throws Exception {
+		var ship = getShip(i, j);
+		if(ship == null)
+		{
+			throw new Exception("No ship on pos: " + i + " " + j);
+		}
+		
+		removeShip(ship);
+		ShipLogic newShip = new ShipLogic(ship.getRow(), ship.getCol(), ship.getSize(), !ship.isVertical());
+		if(placeShip(newShip))
+		{
+			return true;
+		}
+		else
+		{
+			placeShip(ship);
+			return false;
+		}
 	}
 }

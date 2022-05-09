@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.GraphicsConfiguration;
 import java.awt.GridLayout;
 import java.awt.HeadlessException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -29,12 +31,20 @@ public class GameFrame extends JFrame {
 		
 		JPanel bottomPanel = new JPanel(new GridLayout(1, 2));
 		
-		BoardPanel p1 = new BoardPanel("TWOJA PLANSZA", true);
-		BoardPanel p2 = new BoardPanel("PLANSZA PRZECIWNIKA", false);
+		BoardPanel p1 = new BoardPanel("TWOJA PLANSZA");
+		BoardPanel p2 = new BoardPanel("PLANSZA PRZECIWNIKA");
 		bottomPanel.add(p1);
 		bottomPanel.add(p2);
 		
 		add(bottomPanel, BorderLayout.CENTER);
+		
+		setShipsButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				p1.showShips();
+			}
+		});
 	}
 
 

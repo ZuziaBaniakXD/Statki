@@ -91,6 +91,11 @@ public class Ship implements Drawable {
 	public void setY(int y) {
 		this.y = y;
 	}
+
+
+	public void toggleOrientation() {
+		isVertical = !isVertical;
+	}
 	
 	
 }
