@@ -13,6 +13,8 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -38,6 +40,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 public class MenuFrame extends JFrame {
 	
@@ -49,8 +52,9 @@ public class MenuFrame extends JFrame {
 	JButton buttonAi, buttonVs;
 	JLabel etykieta, trash1, trash2, trash3, trash4, trash5, title;
 	Color menuColor, titleColor;
-	JRadioButton buttonSound;
-	int a;
+	final String inFileName = "amberkys.wav";
+	static MenuFrame menuFrame;
+	Sound musicLabel;;
 	
 	
 	
@@ -58,6 +62,7 @@ public class MenuFrame extends JFrame {
 	public MenuFrame() throws HeadlessException, IOException {
 		
 		this.setSize(650, 600);
+		
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         
         
@@ -68,24 +73,20 @@ public class MenuFrame extends JFrame {
         
         
         titlePanel.setLayout(new GridLayout(2,1));
-        menuPanel.setLayout(new GridLayout(9,1));
+        menuPanel.setLayout(new GridLayout(8,1));
         
         
         
         
       
      
-        ImageIcon icon = new ImageIcon("zdjecia/stateczek1.png"); //za mała ikona, w internecie nie ma za bardzo rozwiązań
+        ImageIcon icon = new ImageIcon("zdjecia/stateczek1.png"); 				//za mała ikona, w internecie nie ma za bardzo rozwiązań
         this.setIconImage(icon.getImage());
 
-    
-  
         ImageIcon iconu = new ImageIcon("zdjecia/statek.gif");
 		JLabel label = new JLabel();
 		label.setIcon(iconu);
 	
-      // Image newImage = img.getScaledInstance(640, 490, Image.SCALE_SMOOTH);
-     
 		shipPanel.add(label);
 
         menuColor = new Color(224, 224, 224);
@@ -106,8 +107,7 @@ public class MenuFrame extends JFrame {
         
         buttonAi = new JButton("Przeciwko AI");
         buttonVs = new JButton("Przeciwko graczowi");
-        buttonSound = new JRadioButton("Muzyka");
-        
+                
         buttonAi.addActionListener(new ActionListener() {
 			
 			@Override
@@ -115,7 +115,7 @@ public class MenuFrame extends JFrame {
 				GameFrame gameframe = new GameFrame();
 				gameframe.setLocationRelativeTo(null);
 				gameframe.setVisible(true);
-				setVisible(false);
+				menuFrame.dispose();
 			}
 		});
         
@@ -126,25 +126,22 @@ public class MenuFrame extends JFrame {
 				GameFrame gameframe = new GameFrame();
 				gameframe.setLocationRelativeTo(null);
 				gameframe.setVisible(true);
-				setVisible(false);
+				menuFrame.dispose();
 			}
 		});
        
-       // buttonSound.addActionListener(new ActionListener() {
-        	
-        	//public void actionPerformed(ActionEvent arg0) {
-				//	try {
-					//	Sound sound = new Sound();
-				//	} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-				//		
-				//		e.printStackTrace();
-				//	}
-			
-        //	}
-      //  });
+        
+        musicLabel = new Sound();
+        
+        this.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent evt) {
+            	Runtime.getRuntime().exit(1);
+            }
+        });
+
+
         
         
-        buttonSound.setBackground(menuColor);
         title = new JLabel("Gra w Statki", SwingConstants.CENTER);
         title.setFont(new Font("Serif", Font.PLAIN, 28));
 
@@ -163,9 +160,7 @@ public class MenuFrame extends JFrame {
         menuPanel.add(buttonAi);
         menuPanel.add(trash3);
         menuPanel.add(trash4);
-        menuPanel.add(trash5);
-        menuPanel.add(buttonSound);
-        
+        menuPanel.add(musicLabel);
         
         
         
@@ -177,7 +172,18 @@ public class MenuFrame extends JFrame {
 	}	
 	
 	public static void main(String[] args) throws HeadlessException, IOException {
-		MenuFrame menuFrame = new MenuFrame();
+		menuFrame = new MenuFrame();
+		
+		final String inFileName = "zdjecia/amberkys.wav";
+
+        SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+                Sound p = new Sound();
+                p.play(inFileName);
+            }
+        });
+       
 		menuFrame.setLocationRelativeTo(null);
 		menuFrame.setResizable(false);
 		menuFrame.setVisible(true);
