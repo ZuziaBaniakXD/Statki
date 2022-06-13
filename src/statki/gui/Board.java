@@ -17,7 +17,7 @@ public class Board { //reprezentuje czesc logiczna statkow, przechowujemy tylko 
 		ships = new ArrayList<>();
 		
 		Random rand = new Random();
-		int sizes[] = {4, 3, 3, 2, 2, 2, 1, 1, 1, 1 }; 
+		int sizes[] = {6};//{4, 3, 3, 2, 2, 2, 1, 1, 1, 1 }; 
 		for(int i = 0; i < sizes.length; i++)
 		{
 			int size = sizes[i];
@@ -217,5 +217,20 @@ public class Board { //reprezentuje czesc logiczna statkow, przechowujemy tylko 
 		}
 		
 		return FAIL;
+	}
+	
+	public boolean hasAnyShip()
+	{
+		for(int i = 0; i < BOARD_SIZE; i++)
+		{
+			for(int j = 0; j < BOARD_SIZE; j++)
+			{
+				if(board[i][j]> 0)
+				{
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }

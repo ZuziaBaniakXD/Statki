@@ -59,7 +59,7 @@ public class MenuFrame extends JFrame {
 	
 	
 
-	public MenuFrame() throws HeadlessException, IOException {
+	public MenuFrame() throws IOException {
 		
 		this.setSize(650, 600);
 		
@@ -112,7 +112,7 @@ public class MenuFrame extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				GameFrame gameframe = new GameFrame();
+				GameFrame gameframe = new GameFrame(true);
 				gameframe.setLocationRelativeTo(null);
 				gameframe.setVisible(true);
 				menuFrame.dispose();
@@ -123,7 +123,7 @@ public class MenuFrame extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				GameFrame gameframe = new GameFrame();
+				GameFrame gameframe = new GameFrame(false);
 				gameframe.setLocationRelativeTo(null);
 				gameframe.setVisible(true);
 				menuFrame.dispose();
@@ -171,7 +171,7 @@ public class MenuFrame extends JFrame {
 		
 	}	
 	
-	public static void main(String[] args) throws HeadlessException, IOException {
+	public static void main(String[] args) throws IOException {
 		menuFrame = new MenuFrame();
 		
 		final String inFileName = "zdjecia/amberkys.wav";

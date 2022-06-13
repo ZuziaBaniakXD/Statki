@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.Random;
 
 import javax.sound.sampled.AudioInputStream;
@@ -16,23 +17,26 @@ import javax.sound.sampled.Clip;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-public class GameFrame extends JFrame  {
+public class GameFrame extends JFrame implements GameOverListener  {
 	private static final int SET_SHIPS = 1;
 	private static final int PLAY_GAME = 2;
 	private int gameMode;
+	private boolean withComputer;
+	private BoardPanel p1;
+	private BoardPanel p2;
 	
-	public GameFrame() throws HeadlessException {
+	public GameFrame(boolean withComputer) {
 		gameMode = SET_SHIPS;
-	
+		this.withComputer = withComputer;
 		setSize(800, 600);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		
 		setLayout(new BorderLayout());
 		
 		JPanel upPanel = new JPanel();
-		JButton setShipsButton = new JButton("Ustaw");
+		JButton setShipsButton = new JButton(withComputer ? "Ustaw" : "Ustaw - Gracz 1");
 		upPanel.add(setShipsButton);
 		JButton playButton = new JButton("Zagraj");
 		playButton.setEnabled(false);
@@ -48,8 +52,8 @@ public class GameFrame extends JFrame  {
 		
 		JPanel bottomPanel = new JPanel(new GridLayout(1, 2));
 		
-		BoardPanel p1 = new BoardPanel("TWOJA PLANSZA");
-		BoardPanel p2 = new BoardPanel("PLANSZA PRZECIWNIKA");
+		p1 = new BoardPanel(withComputer ? "TWOJA PLANSZA" : "Gracz 1");
+		p2 = new BoardPanel(withComputer ? "PLANSZA PRZECIWNIKA" : "Gracz 2");
 		bottomPanel.add(p1);
 		bottomPanel.add(p2);
 		
@@ -59,8 +63,35 @@ public class GameFrame extends JFrame  {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				p1.showShips();
-				playButton.setEnabled(true);
+				if(withComputer)
+				{
+					p1.showShips();
+					playButton.setEnabled(true);
+				}
+				else
+				{
+					if(setShipsButton.getText().contains("1") && setShipsButton.getText().contains("Ustaw"))
+					{
+						setShipsButton.setText("Zakoncz ustawianie - Gracz 1");
+						p1.showShips();
+					}
+					else if(setShipsButton.getText().contains("1") && setShipsButton.getText().contains("Zakoncz"))
+					{
+						setShipsButton.setText("Ustaw - Gracz 2");
+						p1.hideShips();
+					}
+					else if(setShipsButton.getText().contains("2") && setShipsButton.getText().contains("Ustaw"))
+					{
+						setShipsButton.setText("Zakoncz ustawianie - Gracz 2");
+						p2.showShips();
+					}
+					else if(setShipsButton.getText().contains("2") && setShipsButton.getText().contains("Zakoncz"))
+					{
+						setShipsButton.setEnabled(false);
+						playButton.setEnabled(true);
+						p2.hideShips();
+					}
+				}
 			}
 		});
 		
@@ -71,30 +102,87 @@ public class GameFrame extends JFrame  {
 				gameMode = PLAY_GAME;
 				setShipsButton.setEnabled(false);
 				playButton.setEnabled(false);
-				
-				p1.setBoardMode(BoardPanel.LOCKED);
+
+				p1.setBoardMode(BoardPanel.LOCKED); //w przypadku gru z komputerem plansza nr 1 wyswietla nasze statki, w przypadku gry z graczem plansza nr 1 jest zablokowana poniewaz najpierw strzela gracz nr 1 w plansze gracza nr 2
 				p2.setBoardMode(BoardPanel.ATTACK);
+
 			}
 		});
 		
-		p2.setAttackListener(new AttackListener() {
-			
-			@Override
-			public void attackPerformed() {
-				// TODO Auto-generated method stub
-				Random rand = new Random();
-				while(p1.attack(rand.nextInt(0,  Board.BOARD_SIZE), rand.nextInt(0, Board.BOARD_SIZE)) == Board.FAIL)
-				{
+		//w przypadku gry z komputerem powinnimy dodac akcje ktora wykonuje strzal komputera od razu po strzale gracza
+		if(withComputer)
+		{
+			p2.setAttackListener(new AttackListener() {
+				
+				@Override
+				public void attackPerformed() {
+					// TODO Auto-generated method stub
+					Random rand = new Random();
+					while(p1.attack(rand.nextInt(0,  Board.BOARD_SIZE), rand.nextInt(0, Board.BOARD_SIZE)) == Board.FAIL)
+					{
+					}
 				}
-			}
-		});
+			});
+		}
+		else
+		{
+			p1.setAttackListener(new AttackListener() {
+				
+				@Override
+				public void attackPerformed() {
+					//po strzale w plansze nr 1 bedziemy oddawac strzal do planszy nr 2
+					p1.setBoardMode(BoardPanel.LOCKED);
+					p2.setBoardMode(BoardPanel.ATTACK);
+				}
+			});
+			
+			p2.setAttackListener(new AttackListener() {
+				
+				@Override
+				public void attackPerformed() {
+					//po strzale w plansze nr 2 bedziemy oddawac strzal do planszy nr 1
+					p1.setBoardMode(BoardPanel.ATTACK);
+					p2.setBoardMode(BoardPanel.LOCKED);
+				}
+			});
+		}
+		
 		
 		this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent evt) {
             	Runtime.getRuntime().exit(1);
             }
         });
+			
+		p1.setGameOverListener(this);
+		p2.setGameOverListener(this);
+	}
 
+	@Override
+	public void gameOverPerformed(BoardPanel failedBoard) {
+		String winner = "";
+		if(failedBoard == p1)
+		{
+			winner = (withComputer ? "komputer" : "gracz nr 2");
+		}
+		else if(failedBoard == p2)
+		{
+			winner = (withComputer ? "gracz" : "gracz nr 1");
+		}
+		JOptionPane.showMessageDialog(this, "Koniec gry, wygrywa " + winner);
+		MenuFrame menu;
+		try {
+			menu = new MenuFrame();
+			menu.setVisible(true);
+		} catch (HeadlessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		dispose();
 	}
 
 

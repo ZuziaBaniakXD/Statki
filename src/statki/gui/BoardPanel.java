@@ -31,6 +31,7 @@ public class BoardPanel extends JPanel {
 	private int boardMode;
 	
 	private AttackListener attackListener = null;
+	private GameOverListener gameOverListener = null;
 	
 	public BoardPanel(String playerText) {
 		boardMode = SET;
@@ -202,10 +203,17 @@ public class BoardPanel extends JPanel {
 		}
 		}
 		repaint();
-		if(attackListener != null && result != Board.FAIL)
+		
+		if(!board.hasAnyShip() && gameOverListener != null) //jesli nie ma zadnego statku na planszy to wywolaj zdarzenie konca gry
+		{
+			boardMode = LOCKED; //zabezpieczenie zeby gracz dalej nie klikal jak gra sie skonczy
+			gameOverListener.gameOverPerformed(this);
+		}
+		else if(attackListener != null && result != Board.FAIL) //jesli nie ma konca gry to oddajemy ruch dla komputera
 		{
 			attackListener.attackPerformed();
 		}
+		
 		return result;
 	}
 	
@@ -272,7 +280,8 @@ public class BoardPanel extends JPanel {
         		b.draw(g,  getScale());
         	}
         }
-        g.setColor(Color.black);
+        g.setColor(Color.red);
+        g.setColor(boardMode == ATTACK ? Color.red : Color.black);
         g.drawString(playerText, (int)(60 * getScale()), (int)(290 * getScale()));
     }
 	
@@ -282,14 +291,26 @@ public class BoardPanel extends JPanel {
 		repaint();
 	}
 	
+	public void hideShips()
+	{
+		showShips = false;
+		repaint();
+	}
+	
 	
 	public void setBoardMode(int boardMode)
 	{
 		this.boardMode = boardMode;
+		repaint();
 	}
 	
-	public void setAttackListener(AttackListener attackListener)
+	public void setAttackListener(AttackListener attackListener) //informujemy iiny board ze wykonalismy strzal
 	{
 		this.attackListener = attackListener;
+	}
+	
+	public void setGameOverListener(GameOverListener gameOverListener) //informujemy gameframea ze gra sie skonczyla
+	{
+		this.gameOverListener = gameOverListener;
 	}
 }
