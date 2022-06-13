@@ -30,7 +30,7 @@ public class GameFrame extends JFrame implements GameOverListener  {
 	
 	public GameFrame(boolean withComputer) {
 		gameMode = SET_SHIPS;
-		this.withComputer = withComputer;
+		this.withComputer = withComputer; //trzyma informacje czy gramy z komputerem (true) czy z innym graczem (false)
 		setSize(800, 600);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setLayout(new BorderLayout());
@@ -70,21 +70,22 @@ public class GameFrame extends JFrame implements GameOverListener  {
 				}
 				else
 				{
+					//jesli gracz nr kliknal w ustaw to daj mu opcje zakonczenia ustawiania
 					if(setShipsButton.getText().contains("1") && setShipsButton.getText().contains("Ustaw"))
 					{
 						setShipsButton.setText("Zakoncz ustawianie - Gracz 1");
 						p1.showShips();
-					}
+					} //jesli gracz 1 kliknal w zakonczenie ustawiania to nadaj opcje ustawienai stakow dla drugiego gracza
 					else if(setShipsButton.getText().contains("1") && setShipsButton.getText().contains("Zakoncz"))
 					{
 						setShipsButton.setText("Ustaw - Gracz 2");
 						p1.hideShips();
-					}
+					}//jesli drugi gracz klikal w opcje ustawienia statkow to daj mu opcje zakonczenia ustawiania
 					else if(setShipsButton.getText().contains("2") && setShipsButton.getText().contains("Ustaw"))
 					{
 						setShipsButton.setText("Zakoncz ustawianie - Gracz 2");
 						p2.showShips();
-					}
+					}//jesli drugi gracz zakonczyl ustawianie to aktywuj przycisk rozpoczenia gry
 					else if(setShipsButton.getText().contains("2") && setShipsButton.getText().contains("Zakoncz"))
 					{
 						setShipsButton.setEnabled(false);
@@ -118,6 +119,7 @@ public class GameFrame extends JFrame implements GameOverListener  {
 				public void attackPerformed() {
 					// TODO Auto-generated method stub
 					Random rand = new Random();
+					//strzelaj tak dlugo az trafi albo w pudlo albo w statek
 					while(p1.attack(rand.nextInt(0,  Board.BOARD_SIZE), rand.nextInt(0, Board.BOARD_SIZE)) == Board.FAIL)
 					{
 					}

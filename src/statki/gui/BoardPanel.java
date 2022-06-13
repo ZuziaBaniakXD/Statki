@@ -24,9 +24,9 @@ public class BoardPanel extends JPanel {
 	private int baseShipPosY;
 	
 	
-	public static final int SET = 1;
-	public static final int ATTACK = 2;
-	public static final int LOCKED = 3;
+	public static final int SET = 1; //ustawianie statkow
+	public static final int ATTACK = 2; //strzelanie
+	public static final int LOCKED = 3; //zablokowana plansza - nie mozna nic klikac
 	
 	private int boardMode;
 	
@@ -178,7 +178,7 @@ public class BoardPanel extends JPanel {
 						repaint();
 					}
 				}
-				else if(e.getButton() == MouseEvent.BUTTON1 && boardMode == ATTACK)
+				else if(e.getButton() == MouseEvent.BUTTON1 && boardMode == ATTACK) //gracz strzela klikalajac na planszy
 				{
 					var index = getIndexFromPosition((int)(e.getX() / getScale()),(int)(e.getY() / getScale()));
 					attack(index[0], index[1]);
@@ -193,11 +193,11 @@ public class BoardPanel extends JPanel {
 		System.out.println(i + " " + j + " " + result);
 		switch(result)
 		{
-		case Board.MISS_FIELD -> {
-			Box b = new ShipBox((i+1) * size, (j+1) * size, size, Color.black);
+		case Board.MISS_FIELD -> { //jesli pudlo to dodaj nowy czarny kwadrat w miejsce strzalu
+			Box b = new ShipBox((i+1) * size, (j+1) * size, size, Color.black); //+1 bo 0 to nazwy kolumn i wierszy
 			boxes.add(b);
 		}
-		case Board.HIT_FIELD -> {
+		case Board.HIT_FIELD -> { //jesli trafiony to dodaj nowy czerwony kwadrat w miejsce strzalu
 			Box b = new ShipBox((i+1) * size, (j+1) * size, size, Color.red);
 			boxes.add(b);
 		}
@@ -209,7 +209,7 @@ public class BoardPanel extends JPanel {
 			boardMode = LOCKED; //zabezpieczenie zeby gracz dalej nie klikal jak gra sie skonczy
 			gameOverListener.gameOverPerformed(this);
 		}
-		else if(attackListener != null && result != Board.FAIL) //jesli nie ma konca gry to oddajemy ruch dla komputera
+		else if(attackListener != null && result != Board.FAIL) //jesli nie ma konca gry to oddajemy ruch dla komputera/drugiego gracza
 		{
 			attackListener.attackPerformed();
 		}
@@ -217,6 +217,8 @@ public class BoardPanel extends JPanel {
 		return result;
 	}
 	
+	//zamienia wspolrzednie x, y na indeksy
+	//np punkt na planszy 118, 80 to bedzie jako indeks (11, 8)
 	private int[] getIndexFromPosition(int x, int y)
 	{
 		int i = x / size - 1;
@@ -240,7 +242,7 @@ public class BoardPanel extends JPanel {
 		return new int[] {i, j};
 	}
 	
-	private Ship getselectedShip(int x, int y)
+	private Ship getselectedShip(int x, int y) //szukamy ktory statek zostal klikniety i zwracamy go
 	{
 		for(Ship s : ships)
 		{
@@ -252,7 +254,7 @@ public class BoardPanel extends JPanel {
 		return null;
 	}
 	
-	private double getScale()
+	private double getScale() //oblicza jakie jest skalowanie (w przypadku gdy np okno zostalo rozciagniete)
 	{
 		double scaleX = getWidth() / (double)baseWindowSize;
 		double scaleY = getHeight() / (double)baseWindowSize;
@@ -304,7 +306,7 @@ public class BoardPanel extends JPanel {
 		repaint();
 	}
 	
-	public void setAttackListener(AttackListener attackListener) //informujemy iiny board ze wykonalismy strzal
+	public void setAttackListener(AttackListener attackListener) //informujemy inny board ze wykonalismy strzal
 	{
 		this.attackListener = attackListener;
 	}

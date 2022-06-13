@@ -45,9 +45,9 @@ public class Sound extends JLabel implements LineListener {
   Sound(){
       
         this.setLayout(new BorderLayout());
-        playbutton = new JButton("W³¹cz muzykê");
+        playbutton = new JButton("WÅ‚Ä…cz muzykÄ™");
        
-        pausebutton = new JButton("Wy³¹cz muzykê");
+        pausebutton = new JButton("WyÅ‚Ä…cz muzykÄ™");
 
         this.add(playbutton, BorderLayout.NORTH);
         playbutton.addActionListener(new ActionListener() {

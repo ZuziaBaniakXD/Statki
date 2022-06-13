@@ -17,7 +17,7 @@ public class Board { //reprezentuje czesc logiczna statkow, przechowujemy tylko 
 		ships = new ArrayList<>();
 		
 		Random rand = new Random();
-		int sizes[] = {6};//{4, 3, 3, 2, 2, 2, 1, 1, 1, 1 }; 
+		int sizes[] = {4, 3, 3, 2, 2, 2, 1, 1, 1, 1 }; 
 		for(int i = 0; i < sizes.length; i++)
 		{
 			int size = sizes[i];
@@ -199,20 +199,21 @@ public class Board { //reprezentuje czesc logiczna statkow, przechowujemy tylko 
 	
 	public int attack(int i, int j)
 	{
+		//i, j - indeksy komorek do strzalu
 		if(i < 0 || i >= BOARD_SIZE || j < 0 || j >= BOARD_SIZE)
 		{
-			return FAIL;
+			return FAIL; //fail jesli nie poprawne indeksy
 		}
 		
-		var state = board[i][j];
-		if(state == EMPTY_FIELD)
+		var state = board[i][j]; //pobierz co jest pod komorka (pudlo, statek, puste itp)
+		if(state == EMPTY_FIELD) //jesli pole puste
 		{
-			board[i][j] = MISS_FIELD;
+			board[i][j] = MISS_FIELD; //ustaw ze pudlo
 			return MISS_FIELD;
 		}
-		else if(state > 0)
+		else if(state > 0) //jesli w polu jest statek
 		{
-			board[i][j] = HIT_FIELD;
+			board[i][j] = HIT_FIELD; //ustaw ze pole trafione
 			return HIT_FIELD;
 		}
 		
@@ -225,7 +226,7 @@ public class Board { //reprezentuje czesc logiczna statkow, przechowujemy tylko 
 		{
 			for(int j = 0; j < BOARD_SIZE; j++)
 			{
-				if(board[i][j]> 0)
+				if(board[i][j]> 0) //jesli jest statek to znaczy ze na planszy jest jakikolwiek statek (true)
 				{
 					return true;
 				}
