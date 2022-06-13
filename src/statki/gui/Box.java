@@ -1,13 +1,16 @@
 package statki.gui;
 
 import java.awt.Color;
+
 import java.awt.Graphics;
 
 public class Box implements Drawable {
-	private int x;
-	private int y;
-	private int size;
+	
+	protected int x;
+	protected int y;
+	protected int size;
 	private String text;
+	private Color color2 = new Color(176, 196, 222);
 	
 	public Box(int x, int y, int size) {
 		this.x = x;
@@ -27,7 +30,9 @@ public class Box implements Drawable {
 	{
 		if(text != null)
 		{
-			g.setColor(Color.cyan);
+
+			
+			g.setColor(color2);
 			g.fillRect((int)(x*scale), (int)(y*scale), (int)(size*scale), (int)(size*scale));
 			g.setColor(Color.black);
 			int sizeX;

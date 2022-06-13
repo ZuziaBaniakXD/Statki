@@ -9,7 +9,7 @@ public class Ship implements Drawable {
 	private int segmentCount;
 	private boolean isVertical;
 	private int segmentSize;
-	private Color color = new Color(51,204,255);
+	private Color color = new Color(100, 149, 237);
 
 	public Ship(int x, int y, int segmentSize, int segmentCount, boolean isVertical) {
 		super();
@@ -63,7 +63,7 @@ public class Ship implements Drawable {
 	
 	public void deselect()
 	{
-		color = new Color(51,204,255);
+		color = new Color(100, 149, 237);
 	}
 	
 	public void move(int destX, int destY)

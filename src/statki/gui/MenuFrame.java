@@ -54,7 +54,7 @@ public class MenuFrame extends JFrame {
 	Color menuColor, titleColor;
 	final String inFileName = "amberkys.wav";
 	static MenuFrame menuFrame;
-	Sound musicLabel;;
+	Sound musicLabel;
 	
 	
 	

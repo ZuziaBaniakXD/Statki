@@ -23,7 +23,17 @@ public class BoardPanel extends JPanel {
 	private int baseShipPosX;
 	private int baseShipPosY;
 	
+	
+	public static final int SET = 1;
+	public static final int ATTACK = 2;
+	public static final int LOCKED = 3;
+	
+	private int boardMode;
+	
+	private AttackListener attackListener = null;
+	
 	public BoardPanel(String playerText) {
+		boardMode = SET;
 		this.showShips = false;
 		this.playerText = playerText;
 		int x = 0;
@@ -74,8 +84,9 @@ public class BoardPanel extends JPanel {
 			}
 			
 			@Override
+			//metoda wywołana, gdy wciśniemy przycisk i przeciągniemy kursor
 			public void mouseDragged(MouseEvent e) {
-				if(e.getButton() == MouseEvent.BUTTON1 && selectedShip != null)
+				if(e.getButton() == MouseEvent.BUTTON1 && selectedShip != null && boardMode == SET)
 				{
 					selectedShip.move((int)(e.getX() / getScale()),(int)(e.getY() / getScale()));
 					repaint();
@@ -87,7 +98,7 @@ public class BoardPanel extends JPanel {
 			
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				if(selectedShip != null && e.getButton() == MouseEvent.BUTTON1)
+				if(selectedShip != null && e.getButton() == MouseEvent.BUTTON1 && boardMode == SET)
 				{
 					selectedShip.deselect();
 
@@ -116,8 +127,9 @@ public class BoardPanel extends JPanel {
 			}
 			
 			@Override
+			//metoda wywoływana, gdy zostaje wciśnięty przycisk
 			public void mousePressed(MouseEvent e) {
-				if(e.getButton() == MouseEvent.BUTTON1)
+				if(e.getButton() == MouseEvent.BUTTON1 && boardMode == SET)
 				{
 					selectedShip = getselectedShip(e.getX(), e.getY());
 					if(selectedShip != null)
@@ -146,7 +158,7 @@ public class BoardPanel extends JPanel {
 			
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if(e.getButton() == MouseEvent.BUTTON3)
+				if(e.getButton() == MouseEvent.BUTTON3 && boardMode == SET)
 				{
 					selectedShip = getselectedShip(e.getX(), e.getY());
 					if(selectedShip != null)
@@ -165,9 +177,36 @@ public class BoardPanel extends JPanel {
 						repaint();
 					}
 				}
-				
+				else if(e.getButton() == MouseEvent.BUTTON1 && boardMode == ATTACK)
+				{
+					var index = getIndexFromPosition((int)(e.getX() / getScale()),(int)(e.getY() / getScale()));
+					attack(index[0], index[1]);
+				}
 			}
 		});
+	}
+	
+	public int attack(int i, int j)
+	{
+		var result = board.attack(i, j);
+		System.out.println(i + " " + j + " " + result);
+		switch(result)
+		{
+		case Board.MISS_FIELD -> {
+			Box b = new ShipBox((i+1) * size, (j+1) * size, size, Color.black);
+			boxes.add(b);
+		}
+		case Board.HIT_FIELD -> {
+			Box b = new ShipBox((i+1) * size, (j+1) * size, size, Color.red);
+			boxes.add(b);
+		}
+		}
+		repaint();
+		if(attackListener != null && result != Board.FAIL)
+		{
+			attackListener.attackPerformed();
+		}
+		return result;
 	}
 	
 	private int[] getIndexFromPosition(int x, int y)
@@ -226,6 +265,13 @@ public class BoardPanel extends JPanel {
             	ships.get(i).draw(g, getScale());
             }
         }
+        for(var b : boxes)
+        {
+        	if(b instanceof ShipBox)
+        	{
+        		b.draw(g,  getScale());
+        	}
+        }
         g.setColor(Color.black);
         g.drawString(playerText, (int)(60 * getScale()), (int)(290 * getScale()));
     }
@@ -236,4 +282,14 @@ public class BoardPanel extends JPanel {
 		repaint();
 	}
 	
+	
+	public void setBoardMode(int boardMode)
+	{
+		this.boardMode = boardMode;
+	}
+	
+	public void setAttackListener(AttackListener attackListener)
+	{
+		this.attackListener = attackListener;
+	}
 }

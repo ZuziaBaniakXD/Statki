@@ -7,14 +7,17 @@ public class Board { //reprezentuje czesc logiczna statkow, przechowujemy tylko 
 	private int[][] board;
 	private ArrayList<ShipLogic> ships;
 	public static final int BOARD_SIZE = 10;
-	private final int EMPTY_FIELD = 0;
+	private static final int EMPTY_FIELD = 0;
+	public static final int MISS_FIELD = -1;
+	public static final int HIT_FIELD = -2;
+	public static final int FAIL = -3;
 	
 	public Board() {
 		board = new int[BOARD_SIZE][BOARD_SIZE];
 		ships = new ArrayList<>();
 		
 		Random rand = new Random();
-		int sizes[] = {4, 3, 3, 2, 2, 2, 1, 1, 1, 1 };
+		int sizes[] = {4, 3, 3, 2, 2, 2, 1, 1, 1, 1 }; 
 		for(int i = 0; i < sizes.length; i++)
 		{
 			int size = sizes[i];
@@ -24,7 +27,8 @@ public class Board { //reprezentuje czesc logiczna statkow, przechowujemy tylko 
 				//wejscie w petle nastepuje przed sprawdzeniem warunku, tworzy sie losowy statek
 				ship = new ShipLogic(rand.nextInt(BOARD_SIZE), rand.nextInt(BOARD_SIZE), size, rand.nextBoolean());
 			}
-			while(!placeShip(ship)); //jesli nie uda sie dodac statku to wracamy na poczatek petli i losujemy kolejny statek
+			while(!placeShip(ship)); //jesli nie uda sie dodac statku to wracamy na poczatek petli 
+									 //i losujemy kolejny statek
 		}
 	}
 	
@@ -144,7 +148,7 @@ public class Board { //reprezentuje czesc logiczna statkow, przechowujemy tylko 
 		//1. Pobiera statek z listy
 		//2. Jesli statek nie istnieje to rzuca wyjatkiem i przerywa operacje
 		//3. Usuwa statek z planszy
-		//4. Tworzy nowy statek ale o nowych wspolrzednych i probuje go dodac na plansze, jesli uda sie dodac to zwroc trie
+		//4. Tworzy nowy statek ale o nowych wspolrzednych i probuje go dodac na plansze, jesli uda sie dodac to zwroc tru,.e
 		//5. Jesli nie uda sie dodac to dodaj z powrotem stary statek na plansze i zwroc false
 		var ship = getShip(sourceI, sourceJ);
 		if(ship == null)
@@ -191,5 +195,27 @@ public class Board { //reprezentuje czesc logiczna statkow, przechowujemy tylko 
 			placeShip(ship);
 			return false;
 		}
+	}
+	
+	public int attack(int i, int j)
+	{
+		if(i < 0 || i >= BOARD_SIZE || j < 0 || j >= BOARD_SIZE)
+		{
+			return FAIL;
+		}
+		
+		var state = board[i][j];
+		if(state == EMPTY_FIELD)
+		{
+			board[i][j] = MISS_FIELD;
+			return MISS_FIELD;
+		}
+		else if(state > 0)
+		{
+			board[i][j] = HIT_FIELD;
+			return HIT_FIELD;
+		}
+		
+		return FAIL;
 	}
 }
