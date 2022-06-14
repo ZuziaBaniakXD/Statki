@@ -48,9 +48,9 @@ public class Sound extends JPanel implements LineListener {
 
   Sound(int i){
       	
-        playbutton = new JButton("W³¹cz muzykê");
+        playbutton = new JButton("WÅ‚Ä…cz muzykÄ™");
        
-        pausebutton = new JButton("Wy³¹cz muzykê");
+        pausebutton = new JButton("WyÅ‚Ä…cz muzykÄ™");
         
         if(i == 0)
       	{
@@ -77,6 +77,7 @@ public class Sound extends JPanel implements LineListener {
             	play("zdjecia/amberkys.wav");
             	}
                 audioClip.start();
+                audioClip.loop(Clip.LOOP_CONTINUOUSLY);
                 n++;
             }
         });
@@ -108,6 +109,7 @@ public class Sound extends JPanel implements LineListener {
             audioClip = (Clip) AudioSystem.getLine(info);
             audioClip.addLineListener(this);
             audioClip.open(audioStream);
+           
 
             /**
              *  Play the audio clip in a new thread not to block the GUI.
