@@ -55,12 +55,13 @@ public class MenuFrame extends JFrame {
 	final String inFileName = "amberkys.wav";
 	static MenuFrame menuFrame;
 	Sound musicLabel;
-	
-	
+	JButton lang;
+	boolean lChooser;
+	int m=1;
 	
 
-	public MenuFrame() throws IOException {
-		
+	public MenuFrame(int mm) throws IOException {
+		m=mm;
 		this.setSize(650, 600);
 		
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -69,18 +70,18 @@ public class MenuFrame extends JFrame {
         titlePanel = new JPanel();
         menuPanel = new JPanel();
         shipPanel = new JPanel();
-        
+     
         
         
         titlePanel.setLayout(new GridLayout(2,1));
-        menuPanel.setLayout(new GridLayout(8,1));
+        menuPanel.setLayout(new GridLayout(9,1));
         
         
         
         
       
      
-        ImageIcon icon = new ImageIcon("zdjecia/stateczek1.png"); 				//za mała ikona, w internecie nie ma za bardzo rozwiązań
+        ImageIcon icon = new ImageIcon("zdjecia/stateczek1.png");
         this.setIconImage(icon.getImage());
 
         ImageIcon iconu = new ImageIcon("zdjecia/statek.gif");
@@ -107,12 +108,13 @@ public class MenuFrame extends JFrame {
         
         buttonAi = new JButton("Przeciwko AI");
         buttonVs = new JButton("Przeciwko graczowi");
+       
                 
         buttonAi.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				GameFrame gameframe = new GameFrame(true);
+				GameFrame gameframe = new GameFrame(true, m, musicLabel.audioClip, musicLabel.n);
 				gameframe.setLocationRelativeTo(null);
 				gameframe.setVisible(true);
 				menuFrame.dispose();
@@ -123,7 +125,7 @@ public class MenuFrame extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				GameFrame gameframe = new GameFrame(false);
+				GameFrame gameframe = new GameFrame(false, m, musicLabel.audioClip, musicLabel.n);
 				gameframe.setLocationRelativeTo(null);
 				gameframe.setVisible(true);
 				menuFrame.dispose();
@@ -131,7 +133,7 @@ public class MenuFrame extends JFrame {
 		});
        
         
-        musicLabel = new Sound();
+        musicLabel = new Sound(0);
         
         this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent evt) {
@@ -153,16 +155,57 @@ public class MenuFrame extends JFrame {
         
         titlePanel.add(title);
         
+        
+        lang = new JButton("Język");
+        
+        
+        lang.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if(m % 2 == 0)
+				{
+					lChooser = true;
+					title.setText("Gra w Statki");
+					lang.setText("Język");
+					buttonAi.setText("Przeciwko AI");
+					buttonVs.setText("Przeciwko graczowi");
+					musicLabel.playbutton.setText("Włącz muzykę");
+					musicLabel.pausebutton.setText("Wyłącz muzykę");
+					menuFrame.setVisible(false);
+					menuFrame.setVisible(true);
+					m++;
+				}
+				else if(m % 2 == 1)
+				{
+					lChooser = false;
+					title.setText("Battleships");
+					lang.setText("Language");
+					buttonAi.setText("Against AI");
+					buttonVs.setText("Against player");
+					musicLabel.playbutton.setText("Turn on the music");
+					musicLabel.pausebutton.setText("Turn off the music");
+					menuPanel.setBounds(EXIT_ON_CLOSE, ABORT, WIDTH, HEIGHT);
+					menuFrame.setVisible(false);
+					menuFrame.setVisible(true);
+					m++;
+				}
+			}
+		});
+
+        
+        
         menuPanel.add(etykieta);
         menuPanel.add(trash1);
         menuPanel.add(buttonVs);
         menuPanel.add(trash2);
         menuPanel.add(buttonAi);
         menuPanel.add(trash3);
+        menuPanel.add(lang);
         menuPanel.add(trash4);
         menuPanel.add(musicLabel);
         
-        
+       
         
         this.add(titlePanel, BorderLayout.NORTH);
         this.add(menuPanel, BorderLayout.EAST);
@@ -172,14 +215,14 @@ public class MenuFrame extends JFrame {
 	}	
 	
 	public static void main(String[] args) throws IOException {
-		menuFrame = new MenuFrame();
+		menuFrame = new MenuFrame(1);
 		
 		final String inFileName = "zdjecia/amberkys.wav";
 
         SwingUtilities.invokeLater(new Runnable() {
 
             public void run() {
-                Sound p = new Sound();
+                Sound p = new Sound(0);
                 p.play(inFileName);
             }
         });
