@@ -157,7 +157,7 @@ public class BoardPanel extends JPanel {
 				
 			}
 			
-			@Override
+			@Override 
 			public void mouseClicked(MouseEvent e) {
 				if(e.getButton() == MouseEvent.BUTTON3 && boardMode == SET)
 				{
@@ -178,7 +178,8 @@ public class BoardPanel extends JPanel {
 						repaint();
 					}
 				}
-				else if(e.getButton() == MouseEvent.BUTTON1 && boardMode == ATTACK) //gracz strzela klikalajac na planszy
+				//gracz strzela klikalajac na planszy
+				else if(e.getButton() == MouseEvent.BUTTON1 && boardMode == ATTACK) 
 				{
 					var index = getIndexFromPosition((int)(e.getX() / getScale()),(int)(e.getY() / getScale()));
 					attack(index[0], index[1]);
@@ -204,12 +205,14 @@ public class BoardPanel extends JPanel {
 		}
 		repaint();
 		
-		if(!board.hasAnyShip() && gameOverListener != null) //jesli nie ma zadnego statku na planszy to wywolaj zdarzenie konca gry
+		if(!board.hasAnyShip() && gameOverListener != null) 
+		//jesli nie ma zadnego statku na planszy to wywolaj zdarzenie konca gry
 		{
 			boardMode = LOCKED; //zabezpieczenie zeby gracz dalej nie klikal jak gra sie skonczy
 			gameOverListener.gameOverPerformed(this);
 		}
-		else if(attackListener != null && result != Board.FAIL) //jesli nie ma konca gry to oddajemy ruch dla komputera/drugiego gracza
+		else if(attackListener != null && result != Board.FAIL) 
+		//jesli nie ma konca gry to oddajemy ruch dla komputera/drugiego gracza
 		{
 			attackListener.attackPerformed();
 		}

@@ -234,21 +234,20 @@ public class GameFrame extends JFrame implements GameOverListener  {
 			winner = (withComputer ? t13 : t14);
 		}
 		JOptionPane.showMessageDialog(this, t15 + winner + t16);
-	//	MenuFrame menuFrame;
-	//	try {
-	//		menuFrame = new MenuFrame(M);
-	//		menuFrame.setLocationRelativeTo(null);
-	//		menuFrame.setResizable(false);
-	//		menuFrame.setVisible(true);
+		MenuFrame menuFrame;
+		try {
+			menuFrame = new MenuFrame(M);
+			menuFrame.setLocationRelativeTo(null);
+			menuFrame.setResizable(false);
+			menuFrame.setVisible(true);
 			
-	//	} catch (HeadlessException e) {
-	//		// TODO Auto-generated catch block
-	//		e.printStackTrace();
-	//	} catch (IOException e) {
+		} catch (HeadlessException e) {
 			// TODO Auto-generated catch block
-	//		e.printStackTrace();
-	//	}
-		
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		dispose();
 	}
 
