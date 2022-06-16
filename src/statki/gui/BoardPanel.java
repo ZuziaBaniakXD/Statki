@@ -32,6 +32,7 @@ public class BoardPanel extends JPanel {
 	
 	private AttackListener attackListener = null;
 	private GameOverListener gameOverListener = null;
+	private SnakeIslandAttackListener snakeIslandAttackListener = null;
 	
 	public BoardPanel(String playerText) {
 		boardMode = SET;
@@ -73,7 +74,7 @@ public class BoardPanel extends JPanel {
         for(int i = 0; i < board.getShips().size(); i++)
         {
         	ShipLogic sl = board.getShips().get(i); //pobieram pobjedyczny statek z listy pod danym indeksem i
-        	Ship s = new Ship((1+sl.getRow()) * size, (1+sl.getCol()) * size, size, sl.getSize(), sl.isVertical());
+        	Ship s = new Ship((1+sl.getRow()) * size, (1+sl.getCol()) * size, size, sl.getSize(), sl.isVertical(), sl.isSpecial());
         	ships.add(s);
         }
         
@@ -202,6 +203,10 @@ public class BoardPanel extends JPanel {
 			Box b = new ShipBox((i+1) * size, (j+1) * size, size, Color.red);
 			boxes.add(b);
 		}
+		case Board.SNAKE_ISLAND -> { //jesli trafiony to dodaj nowy czerwony kwadrat w miejsce strzalu
+			Box b = new ShipBox((i+1) * size, (j+1) * size, size, Color.green);
+			boxes.add(b);
+		}
 		}
 		repaint();
 		
@@ -214,6 +219,10 @@ public class BoardPanel extends JPanel {
 		else if(attackListener != null && result != Board.FAIL) 
 		//jesli nie ma konca gry to oddajemy ruch dla komputera/drugiego gracza
 		{
+			if(snakeIslandAttackListener != null && result == Board.SNAKE_ISLAND)
+			{
+				snakeIslandAttackListener.snakeIslandAttackPerformed(this);
+			}
 			attackListener.attackPerformed();
 		}
 		
@@ -317,5 +326,31 @@ public class BoardPanel extends JPanel {
 	public void setGameOverListener(GameOverListener gameOverListener) //informujemy gameframea ze gra sie skonczyla
 	{
 		this.gameOverListener = gameOverListener;
+	}
+	
+	public void setSnakeIslandAttackListener(SnakeIslandAttackListener snakeIslandAttackListener)
+	{
+		this.snakeIslandAttackListener = snakeIslandAttackListener;
+	}
+	
+	public void attackRandomShip()
+	{
+		var result = board.attackRandomShip();
+		if(result != null)
+		{
+			int i = result[0];
+			int j = result[1];
+			Box b = new ShipBox((i+1) * size, (j+1) * size, size, Color.red);
+			boxes.add(b);
+			repaint();
+		}
+		
+		
+		if(!board.hasAnyShip() && gameOverListener != null) 
+		//jesli nie ma zadnego statku na planszy to wywolaj zdarzenie konca gry
+		{
+			boardMode = LOCKED; //zabezpieczenie zeby gracz dalej nie klikal jak gra sie skonczy
+			gameOverListener.gameOverPerformed(this);
+		}
 	}
 }

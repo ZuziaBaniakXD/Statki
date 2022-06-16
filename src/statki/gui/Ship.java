@@ -9,15 +9,21 @@ public class Ship implements Drawable {
 	private int segmentCount;
 	private boolean isVertical;
 	private int segmentSize;
+	private boolean isSpecial;
 	private Color color = new Color(100, 149, 237);
 
-	public Ship(int x, int y, int segmentSize, int segmentCount, boolean isVertical) {
+	public Ship(int x, int y, int segmentSize, int segmentCount, boolean isVertical, boolean isSpecial) {
 		super();
 		this.x = x;
 		this.y = y;
 		this.segmentCount = segmentCount;
 		this.isVertical = isVertical;
 		this.segmentSize = segmentSize;
+		this.isSpecial = isSpecial;
+		if(isSpecial)
+		{
+			color = new Color(3, 223, 1);
+		}
 	}
 
 
@@ -63,7 +69,15 @@ public class Ship implements Drawable {
 	
 	public void deselect()
 	{
-		color = new Color(100, 149, 237);
+		if(isSpecial)
+		{
+			color = new Color(3, 223, 1);
+		}
+		else
+		{
+			color = new Color(100, 149, 237);
+		}
+		
 	}
 	
 	public void move(int destX, int destY)

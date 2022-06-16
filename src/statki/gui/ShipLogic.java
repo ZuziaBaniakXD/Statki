@@ -6,6 +6,7 @@ public class ShipLogic {
 	private int col;
 	private int size;
 	private boolean isVertical;
+	private boolean isSpecial;
 
 	public ShipLogic(int row, int col, int size, boolean isVertical) {
 		super();
@@ -13,6 +14,12 @@ public class ShipLogic {
 		this.col = col;
 		this.size = size;
 		this.isVertical = isVertical;
+		this.isSpecial = false;
+	}
+	
+	public ShipLogic(int row, int col, int size, boolean isVertical, boolean isSpecial) {
+		this(row, col, size, isVertical);
+		this.isSpecial = isSpecial;
 	}
 
 	public int getRow() {
@@ -41,6 +48,11 @@ public class ShipLogic {
 
 	public boolean isVertical() {
 		return isVertical;
+	}
+	
+	public boolean isSpecial()
+	{
+		return isSpecial;
 	}
 
 	public void setVertical(boolean isVertical) {

@@ -11,13 +11,14 @@ public class Board { //reprezentuje czesc logiczna statkow, przechowujemy tylko 
 	public static final int MISS_FIELD = -1;
 	public static final int HIT_FIELD = -2;
 	public static final int FAIL = -3;
+	public static final int SNAKE_ISLAND = 1000;
 	
 	public Board() {
 		board = new int[BOARD_SIZE][BOARD_SIZE];
 		ships = new ArrayList<>();
 		
 		Random rand = new Random();
-		int sizes[] = {4, 3, 3, 2, 2, 2, 1, 1, 1, 1 }; 
+		int sizes[] = {4, 3, 3, 2, 2, 2, 1, 1, 1 }; 
 		for(int i = 0; i < sizes.length; i++)
 		{
 			int size = sizes[i];
@@ -30,6 +31,15 @@ public class Board { //reprezentuje czesc logiczna statkow, przechowujemy tylko 
 			while(!placeShip(ship)); //jesli nie uda sie dodac statku to wracamy na poczatek petli 
 									 //i losujemy kolejny statek
 		}
+		
+		//losujemy miejsce na wyspe wezy
+		ShipLogic ship = null;
+		do
+		{
+			//wejscie w petle nastepuje przed sprawdzeniem warunku, tworzy sie losowy statek
+			ship = new ShipLogic(rand.nextInt(BOARD_SIZE), rand.nextInt(BOARD_SIZE), 1, rand.nextBoolean(), true);
+		}
+		while(!placeShip(ship, SNAKE_ISLAND));
 	}
 	
 	private boolean isEmptyFieldArround(int x, int y)
@@ -87,6 +97,11 @@ public class Board { //reprezentuje czesc logiczna statkow, przechowujemy tylko 
 	
 	public boolean placeShip(ShipLogic ship)
 	{
+		return placeShip(ship, ship.getSize());
+	}
+	
+	public boolean placeShip(ShipLogic ship, int symbol)
+	{
 		if(!canPlaceShip(ship))
 		{
 			return false;
@@ -96,14 +111,14 @@ public class Board { //reprezentuje czesc logiczna statkow, przechowujemy tylko 
 		{
 			for(int i = ship.getCol(); i < ship.getCol() + ship.getSize(); i++)
 			{
-				board[ship.getRow()][i] = ship.getSize();
+				board[ship.getRow()][i] = symbol;
 			}
 		}
 		else //jesli jest wertykalny
 		{
 			for(int i = ship.getRow(); i < ship.getRow() + ship.getSize(); i++)
 			{
-				board[i][ship.getCol()] = ship.getSize();
+				board[i][ship.getCol()] = symbol;
 			}
 		}
 		ships.add(ship);
@@ -206,6 +221,11 @@ public class Board { //reprezentuje czesc logiczna statkow, przechowujemy tylko 
 		}
 		
 		var state = board[i][j]; //pobierz co jest pod komorka (pudlo, statek, puste itp)
+		if(state == SNAKE_ISLAND)
+		{
+			board[i][j] = HIT_FIELD; //ustaw ze pudlo
+			return SNAKE_ISLAND;
+		}
 		if(state == EMPTY_FIELD) //jesli pole puste
 		{
 			board[i][j] = MISS_FIELD; //ustaw ze pudlo
@@ -233,5 +253,21 @@ public class Board { //reprezentuje czesc logiczna statkow, przechowujemy tylko 
 			}
 		}
 		return false;
+	}
+	
+	public int[] attackRandomShip()
+	{
+		for(int i = 0; i < BOARD_SIZE; i++)
+		{
+			for(int j = 0; j < BOARD_SIZE; j++)
+			{
+				if(board[i][j]> 0 && board[i][j] != SNAKE_ISLAND) 
+				{
+					attack(i,j);
+					return new int[] {i, j};
+				}
+			}
+		}
+		return null;
 	}
 }

@@ -21,7 +21,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-public class GameFrame extends JFrame implements GameOverListener  {
+public class GameFrame extends JFrame implements GameOverListener, SnakeIslandAttackListener  {
 	private static final int SET_SHIPS = 1;
 	private static final int PLAY_GAME = 2;
 	private int gameMode;
@@ -220,6 +220,8 @@ public class GameFrame extends JFrame implements GameOverListener  {
 			
 		p1.setGameOverListener(this);
 		p2.setGameOverListener(this);
+		p1.setSnakeIslandAttackListener(this);
+		p2.setSnakeIslandAttackListener(this);
 	}
 
 	@Override
@@ -249,6 +251,19 @@ public class GameFrame extends JFrame implements GameOverListener  {
 			e.printStackTrace();
 		}
 		dispose();
+	}
+
+	@Override
+	public void snakeIslandAttackPerformed(BoardPanel defenderBoard) {
+		if(p1 != defenderBoard)
+		{
+			p1.attackRandomShip();
+		}
+		else if(p2 != defenderBoard)
+		{
+			p2.attackRandomShip();
+		}
+		JOptionPane.showMessageDialog(this, "Zaatakowano wyspe wezy!");
 	}
 
 
